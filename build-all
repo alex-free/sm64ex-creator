@@ -1,0 +1,68 @@
+#!/bin/bash
+# SM64EXCreator build system
+if [[ $EUID -ne 0 ]]; then
+    echo "You need to run "$0" as root or with sudo to continue"
+	exit 1
+fi
+
+cd "$(dirname "$0")" 
+app=/Applications/SM64EXCreator.app
+
+if [ "$1" = "--everything" ]; then
+    rm -rf $app
+    cp -rv SM64EXCreator.app /Applications
+    cp -v applet.icns $app/Contents/Resources/
+    cp -rv SM64EX.app $app
+    rm -rf build
+    mkdir build
+
+    cp -rv sm64ex-nightly $app
+    cp -rv macports-2.7.1 sdl-1.2.15 build
+
+    cd build/macports-2.7.1
+    export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+    MP_PREFIX=$app
+    ./configure --prefix=$MP_PREFIX --with-applications-dir=$MP_PREFIX/Applications --without-startupitems
+    make
+    make install
+    cd ../../
+
+    export PATH=$app/bin:$PATH
+    port selfupdate
+    port sync
+ 
+    yes | port -d install mpstats gmake
+    port -f deactivate libunwind-headers
+    set -e
+    yes | port -d install apple-gcc42
+
+    yes | port -d install gcc6 glew python310 pkgconfig git i686-w64-mingw32-binutils
+    port select --set python python310
+    port select --set python3 python310
+
+    port select --set gcc gcc40
+    cd build/sdl-1.2.15
+    ./configure --disable-shared --enable-static --without-x --prefix=$app CPPFLAGS='-I/Applications/SM64EXCreator.app/include' LDFLAGS='-L/Applications/SM64EXCreator.app/lib'
+    make install
+    cd ../../
+
+    port select --set gcc mp-gcc6
+    cp -v compile $app/
+    chmod -R 777 $app
+elif [ "$1" = "--app" ]; then
+    set -e
+    cp -rv SM64EXCreator.app /Applications
+    cp -v applet.icns $app/Contents/Resources/
+    cp -rv SM64EX.app $app
+    cp -rv sm64ex-nightly $app
+    cp -v compile $app/
+    cp -v sm64config.txt $app
+    chmod -R 777 $app
+    rm -rf build
+else
+    echo "Usage:"
+    echo ""$0" --everything		Compile and make a completely new SM64EXLC.app"
+    echo ""$0" --app	Update files over an existing SM64EXCreator.app" 
+fi
+
+

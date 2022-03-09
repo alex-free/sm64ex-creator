@@ -1,0 +1,28 @@
+fullscreen true
+window_x 4294967295
+window_y 4294967295
+window_w 640
+window_h 480
+vsync true
+texture_filtering 1
+master_volume 127
+music_volume 127
+sfx_volume 127
+env_volume 127
+key_a 0026 1000 1103 
+key_b 0033 1002 1101 
+key_start 0039 1006 ffff 
+key_l 002a 1009 1104 
+key_r 0036 100a 101b 
+key_z 0025 1007 101a 
+key_cup 0148 ffff ffff 
+key_cdown 0150 ffff ffff 
+key_cleft 014b ffff ffff 
+key_cright 014d ffff ffff 
+key_stickup 0011 ffff ffff 
+key_stickdown 001f ffff ffff 
+key_stickleft 001e ffff ffff 
+key_stickright 0020 ffff ffff 
+stick_deadzone 16
+rumble_strength 50
+skip_intro false
